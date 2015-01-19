@@ -50,6 +50,22 @@ public class MainApp extends Application {
 			MatrixIO.setSaveFlag();
 		}
 		
+		
+		if (!Visualizer.start(-1)) { System.exit(1); }
+		
+		while(true)
+		{
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Visualizer.send("NOOP");
+			System.out.println("NOOP");
+		}
+				
+		
 	}
 
 	/**
