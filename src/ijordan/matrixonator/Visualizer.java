@@ -7,81 +7,82 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- * Visualizer.java
- * ---------------
- * Provides a interface into Matrixonator to support logging / Step-by-Step visualization of
- * the Matrixonator application
+ * Visualizer.java --------------- Provides a interface into Matrixonator to
+ * support logging / Step-by-Step visualization of the Matrixonator application
+ * 
  * @author Ewan
  */
 public class Visualizer {
-	
-	private static ServerSocket vSocket;		//Interface Socket
-	private static Socket client;				//Client to send data to
-	private static PrintWriter vOut;  			//Writer to Socket
-	
-	private static final int DEFAULT_PORT = 9876;	//Default port number
-	
-	
+
+	private static ServerSocket vSocket; // Interface Socket
+	private static Socket client; // Client to send data to
+	private static PrintWriter vOut; // Writer to Socket
+
+	private static final int DEFAULT_PORT = 9876; // Default port number
+	private static Thread clientSniffer = new Thread(new VisualizerClientSniffer());
+
+
 	/**
 	 * Starts up the visualizing server
-	 * @param port (Use -1 for default)
+	 * 
+	 * @param port
+	 *            (Use -1 for default)
 	 * @return True on success, false otherwise
 	 */
-	public static boolean start(int port)
-	{
-		//Checking for default port
-		if (port == -1) { port = DEFAULT_PORT; }
-		
-		//Setup the connection, wait for the client and setup a output stream to client
-		try
-		{
+	public static boolean start(int port) {
+		// Checking for default port
+		if (port == -1) {
+			port = DEFAULT_PORT;
+		}
+
+		// Setup the connection, wait for the client and setup a output stream
+		// to client
+		try {
 			vSocket = new ServerSocket(port);
-			client = vSocket.accept();
-			vOut = new PrintWriter(client.getOutputStream(), true);
+			clientSniffer.start();
 			return true;
 		}
-		
-		//Catch all various exceptions
-		catch (UnknownHostException e)
-		{
+
+		// Catch all various exceptions
+		catch (UnknownHostException e) {
 			System.out.println("Error starting visualizer (HOST)...\n");
 			e.printStackTrace();
 			return false;
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			System.out.println("Error starting visualizer (SOCKET)...\n");
 			e.printStackTrace();
-			return false;	
-		}
-		catch (Exception e)
-		{
+			return false;
+		} catch (Exception e) {
 			System.out.println("Error starting visualizer (UNKN)...\n");
 			e.printStackTrace();
 			return false;
 		}
-		
+
 	}
-	
-	
+
 	/**
 	 * Send a message over the Visualizer
+	 * 
 	 * @param data
 	 * @return True on success
 	 */
-	public static boolean send(String data)
-	{
-		try
-		{ vOut.print(data); vOut.flush(); return true; }
-		catch (Exception e) 
-		{ e.printStackTrace(); return false; }
+	public static boolean send(String data) {
+		try {
+			if (vOut == null) { return false; } 
+			vOut.print(data);
+			vOut.flush();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
-	
+
 	/**
 	 * Closes connections to any clients
 	 */
-	public static void stop()
-	{
+	public static void stop() {
+		if (vOut == null) { return;}
 		vOut.print(">CLOSING...");
 		vOut.flush();
 		try {
@@ -90,5 +91,24 @@ public class Visualizer {
 			e.printStackTrace();
 		}
 	}
-	
+
+	// Adds the new client to the visualizer
+	protected static void addClient(Socket newclient) {
+		try {
+			if (client != null) { return; }
+			client = newclient;
+			vOut = new PrintWriter(client.getOutputStream(), true);
+			clientSniffer.join();	
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	//Returns the server object for thread
+	protected static ServerSocket getServer() {
+		return vSocket;
+	}
+
 }

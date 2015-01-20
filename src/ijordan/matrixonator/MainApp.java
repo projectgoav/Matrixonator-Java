@@ -55,10 +55,10 @@ public class MainApp extends Application {
 		
 		int i = 0;
 		
-		while(i < 100)
+		while(true)
 		{
 			try {
-				Thread.sleep(10);
+				Thread.sleep(250);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -69,9 +69,9 @@ public class MainApp extends Application {
 			++i;
 		}
 		
-		Visualizer.stop();
+		//Visualizer.stop();
 		
-		System.exit(1);
+		//System.exit(1);
 				
 	}
 
