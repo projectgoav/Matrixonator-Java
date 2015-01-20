@@ -22,11 +22,17 @@ public class Visualizer {
 	private static final int DEFAULT_PORT = 9876;	//Default port number
 	
 	
-	//Starts up visualizing socket
+	/**
+	 * Starts up the visualizing server
+	 * @param port (Use -1 for default)
+	 * @return True on success, false otherwise
+	 */
 	public static boolean start(int port)
 	{
+		//Checking for default port
 		if (port == -1) { port = DEFAULT_PORT; }
 		
+		//Setup the connection, wait for the client and setup a output stream to client
 		try
 		{
 			vSocket = new ServerSocket(port);
@@ -34,6 +40,8 @@ public class Visualizer {
 			vOut = new PrintWriter(client.getOutputStream(), true);
 			return true;
 		}
+		
+		//Catch all various exceptions
 		catch (UnknownHostException e)
 		{
 			System.out.println("Error starting visualizer (HOST)...\n");
@@ -56,7 +64,11 @@ public class Visualizer {
 	}
 	
 	
-	//Sends message out to User
+	/**
+	 * Send a message over the Visualizer
+	 * @param data
+	 * @return True on success
+	 */
 	public static boolean send(String data)
 	{
 		try
@@ -65,6 +77,9 @@ public class Visualizer {
 		{ e.printStackTrace(); return false; }
 	}
 	
+	/**
+	 * Closes connections to any clients
+	 */
 	public static void stop()
 	{
 		vOut.print(">CLOSING...");
