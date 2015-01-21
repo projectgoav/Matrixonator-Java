@@ -7,8 +7,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- * Visualizer.java --------------- Provides a interface into Matrixonator to
- * support logging / Step-by-Step visualization of the Matrixonator application
+ * Provides a interface into Matrixonator to support logging / Step-by-Step
+ * visualization of the Matrixonator application
  * 
  * @author Ewan
  */
@@ -19,8 +19,12 @@ public class Visualizer {
 	private static PrintWriter vOut; // Writer to Socket
 
 	private static final int DEFAULT_PORT = 9876; // Default port number
-	private static Thread clientSniffer = new Thread(new VisualizerClientSniffer());
-
+	private static Thread clientSniffer = new Thread(
+			new VisualizerClientSniffer());
+	
+	private static byte packetOrder = 0;
+	
+	private static final byte PACKET_END = 0xF;
 
 	/**
 	 * Starts up the visualizing server
@@ -68,8 +72,21 @@ public class Visualizer {
 	 */
 	public static boolean send(String data) {
 		try {
-			if (vOut == null) { return false; } 
-			vOut.print(data);
+			if (vOut == null) {
+				return false;
+			}
+			
+			byte[] buffer = new byte[4];
+			buffer[0] = packetOrder;
+			
+			if (packetOrder+ 1 > 3) { packetOrder =0;}
+			else {packetOrder++;}
+			
+			buffer[1] = 0;
+			buffer[2] = 4;
+			buffer[3] = PACKET_END;
+			
+			vOut.print(buffer);
 			vOut.flush();
 			return true;
 		} catch (Exception e) {
@@ -82,7 +99,9 @@ public class Visualizer {
 	 * Closes connections to any clients
 	 */
 	public static void stop() {
-		if (vOut == null) { return;}
+		if (vOut == null) {
+			return;
+		}
 		vOut.print(">CLOSING...");
 		vOut.flush();
 		try {
@@ -92,13 +111,19 @@ public class Visualizer {
 		}
 	}
 
-	// Adds the new client to the visualizer
+	/**
+	 * Adds the client to the visualizer and closes sniffer thread
+	 * 
+	 * @param newclient
+	 */
 	protected static void addClient(Socket newclient) {
 		try {
-			if (client != null) { return; }
+			if (client != null) {
+				return;
+			}
 			client = newclient;
 			vOut = new PrintWriter(client.getOutputStream(), true);
-			clientSniffer.join();	
+			clientSniffer.join();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -106,7 +131,11 @@ public class Visualizer {
 		}
 	}
 
-	//Returns the server object for thread
+	/**
+	 * Gets the ServerSocket object for sniffer thread
+	 * 
+	 * @return Server object
+	 */
 	protected static ServerSocket getServer() {
 		return vSocket;
 	}
