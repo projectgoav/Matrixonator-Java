@@ -1,4 +1,4 @@
-package main.java.view.help;
+package main.java.view;
 
 import java.io.File;
 import java.net.MalformedURLException;

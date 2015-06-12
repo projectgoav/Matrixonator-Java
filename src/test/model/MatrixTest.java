@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import main.java.model.*;
 import main.java.view.MatrixonatorIOException;
+import main.java.view.MatrixIO;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

@@ -8,7 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import main.java.Global;
-import main.java.view.help.HelpController;
+import main.java.view.HelpController;
 
 /**
  * Class for handling the top GUI menu elements.

@@ -1,7 +1,7 @@
 package main.java;
 
 import main.java.model.Matrix;
-import main.java.model.MatrixIO;
+import main.java.view.MatrixIO;
 import main.java.view.MatrixAlerts;
 import main.java.view.MatrixOverviewController;
 import main.java.view.MatrixonatorIOException;

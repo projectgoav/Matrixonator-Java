@@ -3,7 +3,7 @@ package main.java;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import main.java.model.Matrix;
-import main.java.model.MatrixIO;
+import main.java.view.MatrixIO;
 
 /**
  * Contains many properties and methods that are used globally throughout Matrixonator

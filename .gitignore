@@ -38,6 +38,7 @@ Thumbs.db
 
 # Other #
 #########
+.metadata/
 .classpath
 .project
 .settings/
