@@ -12,7 +12,7 @@ public abstract class AbstractTask<T> implements ITask<T> {
 	private IReportAggregator _observer;
 	boolean _isRunning;
 	private T _result;
-	private int _id;
+	public int _id;
 	
 	public AbstractTask(IReportAggregator o, int id)
 	{

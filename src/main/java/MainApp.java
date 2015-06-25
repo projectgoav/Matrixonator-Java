@@ -5,6 +5,7 @@ import main.java.view.MatrixIO;
 import main.java.view.MatrixAlerts;
 import main.java.view.MatrixOverviewController;
 import main.java.view.MatrixonatorIOException;
+import main.java.view.TestController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,7 +76,8 @@ public class MainApp extends Application {
 
     initRootLayout();
 
-    showMatrixOverview();
+    showTest();
+    //showMatrixOverview();
 
   }
 
@@ -99,10 +101,31 @@ public class MainApp extends Application {
     }
   }
 
+  public void showTest()
+  {
+	    try {
+	        // Load matrix overview.
+	        FXMLLoader loader = new FXMLLoader();
+	        loader.setLocation(MainApp.class.getResource("view/TestPain.xml.fxml"));
+	        AnchorPane matrixOverview = (AnchorPane) loader.load();
+
+	        // Set matrix overview into the centre of root layout.
+	        rootLayout.setCenter(matrixOverview);
+
+	        // Give the controller access to the main app.
+	        TestController controller = loader.getController();
+	        controller.setMainApp(this);
+	        controller.Initialize();
+
+	      } catch (IOException e) {
+	        e.printStackTrace();
+	      }
+  }
+  
   /**
    * Shows the person overview inside the root layout.
    */
-  public void showMatrixOverview() {
+  /*public void showMatrixOverview() {
     try {
       // Load matrix overview.
       FXMLLoader loader = new FXMLLoader();
@@ -119,7 +142,7 @@ public class MainApp extends Application {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
+  }*/
 
   /**
    * Returns the main stage.
