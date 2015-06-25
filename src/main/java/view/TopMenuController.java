@@ -7,7 +7,7 @@ import java.net.URL;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import main.java.Global;
+import main.java.MainApp;
 import main.java.view.HelpController;
 
 /**
@@ -16,6 +16,13 @@ import main.java.view.HelpController;
 public class TopMenuController {
 
   private HelpController hc;
+  
+  private static MainApp _app;
+  
+  public static void setApp(MainApp app)
+  {
+    _app = app;
+  }
 
   @FXML
   public void handleMenuClose() {
@@ -52,6 +59,7 @@ public class TopMenuController {
   public void handleMenuHelp() {
     if (hc == null) {
       hc = new HelpController();
+      HelpController.setApp(_app);
     }
     if (!hc.isOpen()) {
       hc.run();
@@ -75,7 +83,7 @@ public class TopMenuController {
       int major = Integer.parseInt(String.valueOf(s.charAt(0)));
       int minor = Integer.parseInt(String.valueOf(s.charAt(2)));
 
-      if ((major > Global.MAJOR_VERSION_NUMBER) || (minor > Global.MINOR_VERSION_NUMBER)) {
+      if ((major > _app.Global._vMajor || (minor > _app.Global._vMinor))) {
         MatrixAlerts.showUpdates(s);
         MatrixAlerts.showUpdateWarning();
         // TODO Add in check for if updater.jar isn't actually there :(

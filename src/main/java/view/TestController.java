@@ -3,8 +3,6 @@ package main.java.view;
 import java.util.ArrayList;
 
 import main.java.MainApp;
-import main.java.async.AbstractTask;
-import main.java.async.IReportAggregator;
 import main.java.async.TaskPool;
 import main.java.async.tasks.SimpleWaitTask;
 import javafx.concurrent.Task;
@@ -54,23 +52,20 @@ public class TestController {
 	@FXML
 	protected Label Label34;
 
-	private IReportAggregator aObserver;
 	private TaskPool aPool;
 	private MainApp _app;
 	
 	@FXML
-	public void Initialize()
+	public void initialize()
 	{
 		System.out.println("> Starting up...");
 		aPool = new TaskPool(16,32,100);
 		startTasks();
 	}
-	
-	
+		
 	private void startTasks()
 	{
 		System.out.println("> Adding tasks...");
-		aObserver = new TestReportAggregator(this);
 		
 		@SuppressWarnings("serial")
 		ArrayList<Task<Void>> tasks = new ArrayList<Task<Void>>()

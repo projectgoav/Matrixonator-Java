@@ -1,17 +1,23 @@
 package main.java;
 
+import main.java.async.tasks.PathSeperatorTask;
+import main.java.async.tasks.UpdateTask;
+import main.java.async.tasks.WorkingDirectoryTask;
 import main.java.model.Matrix;
 import main.java.view.MatrixIO;
 import main.java.view.MatrixAlerts;
 import main.java.view.MatrixOverviewController;
 import main.java.view.MatrixonatorIOException;
 import main.java.view.TestController;
+import main.java.view.TopMenuController;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javafx.application.Application;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.stage.Stage;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -33,40 +39,102 @@ public class MainApp extends Application {
    * Set on startup if passed with update arg Means update message is displayed
    */
   private static boolean wasUpdate = false;
+  
+  public Global Global;
 
   /**
    * Constructor
    */
   public MainApp() {
+    Global = new Global();
+       
+    //Setup code here!
+ 
+    //psTask always 0 as sets up everything before use!
+    PathSeperatorTask psTask = new PathSeperatorTask(0); 
+    
+    psTask.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED,
+        new EventHandler<WorkerStateEvent>() {
+        @Override
+        public void handle(WorkerStateEvent t) {
+            char result = psTask.getValue();
+            System.out.println("sfkjh2");
+            Global.setPathSeperator(result);
+        }
+    });
+    
+    //psTask.addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED);setOnSucceeded(e -> {     
+    //  try {
+    //    char result = psTask.getValue();
+    //    System.out.println("[PathSeperatorTask (0)] Got value returned");
+    //   Global.setPathSeperator(result);       
+    //  } catch (Exception ex) {
+    //    System.out.println(String.format("[PathSeperatorTask (0)] Error retriving result\nMessage: %s", ex.getMessage()));
+    //  }
+    //});
+    
+    UpdateTask uTask = new UpdateTask(1, Global._vMajor, Global._vMinor);
+    
+    Global.getTaskPool().pool(psTask);
+    Global.getTaskPool().pool(uTask);
+    
+    while(Global.getPathSeperator() == ' ')
+    {
+      System.out.println("[MainThread] Waiting for startup tasks...");
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException e1) {
+        System.out.println("[MainThread] Interupted while waiting for startup tasks");
+      }
+    }
+    
+    WorkingDirectoryTask wdTask = new WorkingDirectoryTask(2, Global.getPathSeperator());
+    wdTask.setOnSucceeded(e -> {
+      try {
+        String[] result = wdTask.get();   
+        
+        if(result[2] == "no") { Global.setSaveFlag(); }
+        Global.setLocalDir(result[0]);
+        Global.setMatrixDir(result[1]);      
+       } catch (Exception ex) {
+         System.out.println(String.format("[PathSeperatorTask (0)] Error retriving result\nMessage: %s", ex.getMessage()));
+       }  
+    });
+    
+    
+    Global.getTaskPool().pool(wdTask);
+    
+    
+       
     // Add some sample data
-    Global.addMatrix(new Matrix("Example", new double[][] { {5, 2, 13}, {3, 2, -5}, {7, 0, 9}},
-        null));
-    Global.addMatrix(new Matrix("Identity2", new double[][] { {1, 0}, {0, 1}}, null));
+    //Global.addMatrix(new Matrix("Example", new double[][] { {5, 2, 13}, {3, 2, -5}, {7, 0, 9}},
+    //    null));
+    //Global.addMatrix(new Matrix("Identity2", new double[][] { {1, 0}, {0, 1}}, null));
 
     /*
      * NB: ONLY HERE FOR TESTING PURPOSES, PERHAPS MOVE TO INIT AND OUT OF CONSTRUCTOR? OUT OF
      * CONSTRUCTOR?
      */
-    try {
-      MatrixIO.checkDirectories();
-    } catch (MatrixonatorIOException e) {
-      Alert alert = new Alert(AlertType.WARNING);
-      alert.setHeaderText("Matrixonator working Directories");
-      alert.setTitle("Alert");
-      alert.setContentText(e.getMessage());
-      alert.showAndWait();
-      MatrixIO.setSaveFlag();
-    }
+    //try {
+    //  MatrixIO.checkDirectories();
+    //} catch (MatrixonatorIOException e) {
+    //  Alert alert = new Alert(AlertType.WARNING);
+    //  alert.setHeaderText("Matrixonator working Directories");
+    ///  alert.setTitle("Alert");
+    //  alert.setContentText(e.getMessage());
+    //  alert.showAndWait();
+    //  MatrixIO.setSaveFlag();
+    //}
 
-    if (wasUpdate) {
-      MatrixAlerts.showWasUpdate();
-    }
+    //if (wasUpdate) {
+    //  MatrixAlerts.showWasUpdate();
+    //}
 
     // Load in all saved matrices for display
-    ArrayList<Matrix> result = MatrixIO.loadAll();
-    for (Matrix m : result) {
-      Global.addMatrix(m);
-    }
+    //ArrayList<Matrix> result = MatrixIO.loadAll();
+    //for (Matrix m : result) {
+    //  Global.addMatrix(m);
+    //}
   }
 
   @Override
@@ -75,9 +143,10 @@ public class MainApp extends Application {
     this.primaryStage.setTitle("Matrixonator");
 
     initRootLayout();
+    
+    TopMenuController.setApp(this);
 
-    showTest();
-    //showMatrixOverview();
+    showMatrixOverview();
 
   }
 
@@ -100,32 +169,11 @@ public class MainApp extends Application {
       e.printStackTrace();
     }
   }
-
-  public void showTest()
-  {
-	    try {
-	        // Load matrix overview.
-	        FXMLLoader loader = new FXMLLoader();
-	        loader.setLocation(MainApp.class.getResource("view/TestPain.xml.fxml"));
-	        AnchorPane matrixOverview = (AnchorPane) loader.load();
-
-	        // Set matrix overview into the centre of root layout.
-	        rootLayout.setCenter(matrixOverview);
-
-	        // Give the controller access to the main app.
-	        TestController controller = loader.getController();
-	        controller.setMainApp(this);
-	        controller.Initialize();
-
-	      } catch (IOException e) {
-	        e.printStackTrace();
-	      }
-  }
-  
+ 
   /**
    * Shows the person overview inside the root layout.
    */
-  /*public void showMatrixOverview() {
+  public void showMatrixOverview() {
     try {
       // Load matrix overview.
       FXMLLoader loader = new FXMLLoader();
@@ -142,7 +190,7 @@ public class MainApp extends Application {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }*/
+  }
 
   /**
    * Returns the main stage.

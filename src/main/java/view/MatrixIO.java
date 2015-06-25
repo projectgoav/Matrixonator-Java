@@ -25,14 +25,14 @@ public class MatrixIO {
    * Called from startup check to stop IO operations if no directory structure
    */
   public static void setSaveFlag() {
-    Global.DONT_SAVE = true;
+  //  Global.DONT_SAVE = true;
   }
 
   /**
    * RESET METHOD FOR JUNIT TESTS. DO NOT USE IN APPLICATION
    */
   public static void resetSaveFlag() {
-    Global.DONT_SAVE = false;
+   // Global.DONT_SAVE = false;
   }
 
   /**
@@ -90,7 +90,7 @@ public class MatrixIO {
    * @return True on success (or if no data was found). False if something went wrong
    */
   public static boolean deleteFile(String filename) {
-    File oldData = new File(getWorkingDir() + MATRIXDIR + Global.PATH_SEP + filename);
+    File oldData = new File(getWorkingDir() + MATRIXDIR + '\\' + filename);
 
     if (oldData.exists()) {
       return oldData.delete();
@@ -106,7 +106,7 @@ public class MatrixIO {
    * @return True if exists
    */
   public static boolean isMatrixSaved(String filename) {
-    File toCheck = new File(getWorkingDir() + MATRIXDIR + Global.PATH_SEP + filename);
+    File toCheck = new File(getWorkingDir() + MATRIXDIR + '\\' + filename);
     return toCheck.exists();
   }
 
@@ -119,12 +119,12 @@ public class MatrixIO {
    */
   public static Matrix loadMatrix(String filename) throws Exception {
 
-    if (Global.DONT_SAVE) {
-      throw new MatrixonatorIOException(
-          "Save is currently disabled due to Matrixonator not having working directories. Please contact system administor for directory create rights.");
-    } // Checking incase the working directories haven't worked properly
+    //if (Global.DONT_SAVE) {
+     // throw new MatrixonatorIOException(
+    //      "Save is currently disabled due to Matrixonator not having working directories. Please contact system administor for directory create rights.");
+    //} // Checking incase the working directories haven't worked properly
 
-    filename = getWorkingDir() + MATRIXDIR + Global.PATH_SEP + filename;
+    filename = getWorkingDir() + MATRIXDIR + '\\'+ filename;
 
     File matrixFile = new File(filename);
 
@@ -155,9 +155,9 @@ public class MatrixIO {
    */
   public static boolean save(Matrix matrix) {
 
-    if (Global.DONT_SAVE) {
-      return false;
-    } // Checking for Save flag on startup
+    //if (Global.DONT_SAVE) {
+    //  return false;
+    //} // Checking for Save flag on startup
 
     // Size required for data
     String[] buffer = new String[(matrix.getNumRows() + 3)];
@@ -184,7 +184,7 @@ public class MatrixIO {
     // Actual IO Operation in try
     try {
       File matrixFile =
-          new File(getWorkingDir() + MATRIXDIR + Global.PATH_SEP + buffer[0] + ".matrix");
+          new File(getWorkingDir() + MATRIXDIR + '\\' + buffer[0] + ".matrix");
 
       if (!matrixFile.exists()) {
         matrixFile.createNewFile();
@@ -218,7 +218,7 @@ public class MatrixIO {
     if (matrixNames != null) {
       for (String name : matrixNames) {
         try {
-          String filename = getWorkingDir() + MATRIXDIR + Global.PATH_SEP + name;
+          String filename = getWorkingDir() + MATRIXDIR + '\\' + name;
           File m = new File(filename);
           loadedMatrices.add(load(m));
         } catch (Exception e) {
@@ -260,11 +260,11 @@ public class MatrixIO {
 
     // Update Path Sep
     if (osName.startsWith("Windows")) {
-      Global.PATH_SEP = '\\';
+    //  Global.PATH_SEP = '\\';
     }
 
-    LOCALDIR = tempLDir.replace('%', Global.PATH_SEP);
-    MATRIXDIR = tempMDir.replace('%', Global.PATH_SEP);
+    LOCALDIR = tempLDir.replace('%', '\\');
+    MATRIXDIR = tempMDir.replace('%', '\\');
 
 
     // Checking for a working directory

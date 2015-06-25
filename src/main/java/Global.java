@@ -1,10 +1,6 @@
 package main.java;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import main.java.model.Matrix;
-import main.java.view.MatrixIO;
-
+import main.java.async.TaskPool;
 /**
  * Contains many properties and methods that are used globally throughout Matrixonator
  * 
@@ -12,75 +8,74 @@ import main.java.view.MatrixIO;
  *
  */
 public class Global {
+	
+  public final int _vMajor = 1;
+  public final int _vMinor = 0;
+  
+  private char _pathSep = ' ';
+  private boolean _saveFlag = true;
+  
+  private String _localDir;
+  private String _matrixDir;
+  
+  private TaskPool _pool;
+ 
+  public Global()
+  {
+    _pool = new TaskPool(16,32,100);
+  }
+  
 
-  /**
-   * Major version number
-   */
-  public static final int MAJOR_VERSION_NUMBER = 1;
+  public TaskPool getTaskPool() { return _pool; }
 
-  /**
-   * Minor Version number
-   */
-  public static final int MINOR_VERSION_NUMBER = 0;
-
-  /**
-   * IO Flag set if there is no proper working directories
-   */
-  public static boolean DONT_SAVE = false;
-
-
-  /**
-   * Global Path seperator to use DEFAULT : '/' for linux
-   */
-  public static char PATH_SEP = '/';
-
-  /**
-   * The data as an observable list of matrices.
-   */
-  private static ObservableList<Matrix> matrixData = FXCollections.observableArrayList();
-
-  /**
-   * Add matrix to global list of Matrices
-   * 
-   * @param m - Matrix to add
-   */
-  public static void addMatrix(Matrix m) {
-    matrixData.add(m);
+  public void setPathSeperator(char sep)
+  {
+    if(_pathSep == ' ') { _pathSep = sep; }
   }
 
-  /**
-   * Get all the matrices that Matrixonator knows about
-   * 
-   * @return List of all matrices
-   */
-  public static ObservableList<Matrix> getMatrices() {
-    return matrixData;
+  public char getPathSeperator()
+  {
+    return _pathSep;
   }
-
-  /**
-   * Removes a matrix from the global list if found
-   * 
-   * @param m - Matrix to remove
-   * @return True if success
-   */
-  public static boolean removeMatrix(Matrix m) {
-    return matrixData.remove(m);
+  
+  public void setLocalDir(String path)
+  {
+    if(_localDir == null) { _localDir = path; }
   }
-
+  
+  public void setMatrixDir(String path)
+  {
+    if(_matrixDir == null) { _localDir = path; }
+  }
+  
+  public String getLocalDir()
+  {
+    return _localDir;
+  }
+  
+  public String getMatrixDir()
+  {
+    return _matrixDir;
+  }
+  
+  public boolean getSaveFlag() { return _saveFlag; }
+  
+  public void setSaveFlag() { _saveFlag = false; }
+  
   /**
    * Saves all matrices stored within the application
    * 
    * @return True if all files are saved successfully.
    */
-  public static boolean saveAllMatrices() {
-
-    boolean saveResult = true;
-
-    for (Matrix m : matrixData) {
-      // AND all results together, so if we get at least one false, it'll say false.
-      saveResult = saveResult && MatrixIO.save(m);
-    }
-    return saveResult;
-  }
+  //public static boolean saveAllMatrices() {
+//
+  //  boolean saveResult = true;
+//
+  //  for (Matrix m : matrixData) {
+  //    // AND all results together, so if we get at least one false, it'll say false.
+  //    saveResult = saveResult && MatrixIO.save(m);
+  //  }
+   // return saveResult;
+/// }
 
 }

@@ -5,9 +5,10 @@ import java.util.Optional;
 import org.controlsfx.dialog.Wizard;
 import org.controlsfx.dialog.Wizard.WizardPane;
 
-import main.java.Global;
 import main.java.MainApp;
 import main.java.model.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -45,6 +46,12 @@ public class MatrixOverviewController {
   @FXML
   private Label createdDateLabel;
 
+  /**
+   * The data as an observable list of matrices.
+   */
+  private static ObservableList<Matrix> matrixData = FXCollections.observableArrayList();
+  
+  
   // Reference to the main application.
   @SuppressWarnings("unused")
   private MainApp mainApp;
@@ -75,7 +82,7 @@ public class MatrixOverviewController {
    * Handler when MatrixOverview has been brought back into focus
    */
   private void updateMatrixList() {
-    matrixTable.setItems(Global.getMatrices());
+    matrixTable.setItems(matrixData);
   }
 
   /**
@@ -87,7 +94,7 @@ public class MatrixOverviewController {
     this.mainApp = mainApp;
 
     // Add observable list data to the table
-    matrixTable.setItems(Global.getMatrices());
+    matrixTable.setItems(matrixData);
     
     // Listen for selection changes and show the person details when
     // changed.
@@ -222,7 +229,7 @@ public class MatrixOverviewController {
           }
         }
 
-        Global.addMatrix(new Matrix(name, data, null));
+        matrixData.add(new Matrix(name, data, null));
         updateMatrixList();
 
       }
@@ -326,7 +333,7 @@ public class MatrixOverviewController {
       matrixTable.getItems().remove(selectedIndex);
 
       // TODO Remove from Global as well (TEST)
-      Global.removeMatrix(m);
+      matrixData.remove(m);
       
       updateMatrixList();
 

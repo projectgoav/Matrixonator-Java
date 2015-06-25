@@ -3,7 +3,7 @@ package main.java.view;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import main.java.Global;
+import main.java.MainApp;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -35,6 +35,13 @@ public class HelpController {
 
   @FXML
   private Stage viewer;
+  
+  private static MainApp _app;
+  
+  public static void setApp(MainApp app)
+  {
+    _app = app;
+  }
 
 
   @FXML
@@ -167,7 +174,7 @@ public class HelpController {
    * @return URL in String format of file. Returns null if invalid URL
    */
   private String generateURL(String webpage) {
-    File newPage = new File ("help" + Global.PATH_SEP + webpage);
+    File newPage = new File ("help" + _app.Global.getPathSeperator() + webpage);
     try {
       return newPage.toURI().toURL().toString();
     } catch (MalformedURLException e) {
